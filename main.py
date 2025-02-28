@@ -12,16 +12,16 @@ from typing import Optional, Dict, List, Any
 import uvicorn
 from starlette.middleware.sessions import SessionMiddleware
 from pydantic import BaseModel
-from openai import OpenAI
 import os
 from dotenv import load_dotenv
 from sqlalchemy.exc import SQLAlchemyError
+import openai
 
 # Cargar variables de entorno
 load_dotenv()
 
 # Configurar OpenAI
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Crear las tablas en la base de datos
 models.Base.metadata.create_all(bind=engine)
@@ -88,7 +88,7 @@ async def get_chatgpt_response(prompt: str, history: List[Dict[str, str]] = []) 
         messages.append({"role": "user", "content": prompt})
 
         # Llamar a la API de OpenAI
-        response = client.chat.completions.create(
+        response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=messages,
             temperature=0.7,
@@ -96,7 +96,7 @@ async def get_chatgpt_response(prompt: str, history: List[Dict[str, str]] = []) 
         )
 
         # Extraer la respuesta
-        return response.choices[0].message.content
+        return response.choices[0].message['content']
 
     except Exception as e:
         print(f"Error calling ChatGPT API: {str(e)}")
