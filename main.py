@@ -30,7 +30,7 @@ app = FastAPI(title="Clínica Dental")
 
 # Configuración de seguridad
 security = HTTPBasic()
-app.add_middleware(SessionMiddleware, secret_key="tu_clave_secreta_aqui")
+app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY"))
 
 # Mount static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
