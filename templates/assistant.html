@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}Asistente Virtual - DentalCare{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">Asistente Virtual DentalCare</h1>
+            <p class="text-gray-600">Tu asistente personal para consultas dentales</p>
+        </div>
+
+        <!-- Chat Container -->
+        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+            <!-- Chat Messages -->
+            <div id="chat-messages" class="h-96 overflow-y-auto p-4 space-y-4">
+                <!-- Mensaje inicial del asistente -->
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <div class="h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center">
+                            <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-3 bg-gray-100 rounded-lg py-3 px-4 max-w-lg">
+                        <p class="text-sm text-gray-900">
+                            ¡Hola! Soy tu asistente dental virtual. Estoy aquí para:
+                        </p>
+                        <ul class="mt-2 text-sm text-gray-700 list-disc list-inside">
+                            <li>Responder tus preguntas sobre salud dental</li>
+                            <li>Orientarte sobre posibles tratamientos</li>
+                            <li>Ayudarte a programar citas</li>
+                            <li>Atender emergencias dentales</li>
+                        </ul>
+                        <p class="mt-2 text-sm text-gray-900">
+                            ¿En qué puedo ayudarte hoy?
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="border-t border-gray-200 p-4">
+                <form id="chat-form" class="flex space-x-4">
+                    <input type="text" id="user-input" 
+                           class="flex-1 rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                           placeholder="Escribe tu consulta aquí..."
+                           required>
+                    <button type="submit" 
+                            class="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2">
+                        Enviar
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Disclaimer -->
+        <div class="mt-6 text-center text-sm text-gray-500">
+            <p>Este asistente virtual proporciona orientación inicial y no sustituye la consulta con un profesional dental.</p>
+            <p class="mt-2">En caso de emergencia, contacta directamente con nuestra clínica o acude a urgencias.</p>
+        </div>
+    </div>
+</div>
+
+<script>
+let chatHistory = [];
+
+function appendMessage(message, isUser = false) {
+    const chatMessages = document.getElementById('chat-messages');
+    const messageHTML = `
+        <div class="flex items-start ${isUser ? 'justify-end' : ''}">
+            ${!isUser ? `
+            <div class="flex-shrink-0">
+                <div class="h-10 w-10 rounded-full bg-indigo-500 flex items-center justify-center">
+                    <svg class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+            </div>
+            ` : ''}
+            <div class="${isUser ? 'bg-indigo-100' : 'bg-gray-100'} rounded-lg py-3 px-4 max-w-lg ${isUser ? '' : 'ml-3'}">
+                <p class="text-sm text-gray-900">${message}</p>
+            </div>
+        </div>
+    `;
+    chatMessages.insertAdjacentHTML('beforeend', messageHTML);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+document.getElementById('chat-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const userInput = document.getElementById('user-input');
+    const message = userInput.value.trim();
+    
+    if (!message) return;
+    
+    // Deshabilitar el input y botón mientras se procesa
+    userInput.disabled = true;
+    const submitButton = this.querySelector('button[type="submit"]');
+    submitButton.disabled = true;
+    
+    try {
+        // Mostrar el mensaje del usuario
+        appendMessage(message, true);
+        
+        // Enviar mensaje al servidor
+        const response = await fetch('/chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                message: message,
+                history: chatHistory
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+            // Actualizar el historial
+            chatHistory = data.history;
+            
+            // Mostrar la respuesta del asistente
+            appendMessage(data.response);
+        } else {
+            throw new Error(data.error || 'Error en la comunicación');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        appendMessage('Lo siento, ha ocurrido un error. Por favor, intenta de nuevo o contacta directamente con la clínica.');
+    } finally {
+        // Rehabilitar el input y botón
+        userInput.disabled = false;
+        submitButton.disabled = false;
+        userInput.value = '';
+        userInput.focus();
+    }
+});
+</script>
+{% endblock %} 

@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio{% endblock %}
+
+{% block head %}
+<!-- Add Swiper CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+<!-- Add Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section with 4K Background -->
+<div class="relative h-screen">
+    <img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=100&w=3840" 
+         alt="Dental Office" 
+         class="absolute inset-0 w-full h-full object-cover"
+         loading="lazy">
+    <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+    <div class="relative z-10 flex items-center justify-center h-full text-center">
+        <div class="max-w-4xl px-4">
+            <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">
+                Cuidamos tu Sonrisa
+            </h1>
+            <p class="text-xl md:text-2xl text-white mb-8">
+                Tecnología avanzada y profesionales expertos para tu salud dental
+            </p>
+            <a href="/contact" 
+               class="inline-block bg-indigo-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-indigo-700 transition duration-300">
+                Agenda tu Cita
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Gallery Section -->
+<div class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-4xl font-bold text-center text-gray-900 mb-12">
+            Nuestras Instalaciones
+        </h2>
+        
+        <!-- Swiper Gallery -->
+        <div class="swiper mySwiper">
+            <div class="swiper-wrapper">
+                <!-- Imagen 1 -->
+                <div class="swiper-slide">
+                    <img src="https://images.unsplash.com/photo-1629909615184-74f495363b67?q=100&w=3840" 
+                         alt="Consultorio Dental"
+                         class="w-full h-[600px] object-cover rounded-lg"
+                         loading="lazy">
+                </div>
+                <!-- Imagen 2 -->
+                <div class="swiper-slide">
+                    <img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=100&w=3840" 
+                         alt="Equipo Dental"
+                         class="w-full h-[600px] object-cover rounded-lg"
+                         loading="lazy">
+                </div>
+                <!-- Imagen 3 -->
+                <div class="swiper-slide">
+                    <img src="https://images.unsplash.com/photo-1606811841689-23dfddce3e95?q=100&w=3840" 
+                         alt="Sala de Tratamiento"
+                         class="w-full h-[600px] object-cover rounded-lg"
+                         loading="lazy">
+                </div>
+                <!-- Imagen 4 -->
+                <div class="swiper-slide">
+                    <img src="https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=100&w=3840" 
+                         alt="Tecnología Dental"
+                         class="w-full h-[600px] object-cover rounded-lg"
+                         loading="lazy">
+                </div>
+            </div>
+            <div class="swiper-pagination"></div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section with Images -->
+<div class="py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+            <!-- Feature 1 -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1606811841689-23dfddce3e95?q=100&w=3840" 
+                     alt="Tecnología Avanzada"
+                     class="w-full h-48 object-cover"
+                     loading="lazy">
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Tecnología Avanzada</h3>
+                    <p class="text-gray-600">Equipos de última generación para diagnósticos precisos y tratamientos efectivos.</p>
+                </div>
+            </div>
+            <!-- Feature 2 -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1629909615184-74f495363b67?q=100&w=3840" 
+                     alt="Profesionales Expertos"
+                     class="w-full h-48 object-cover"
+                     loading="lazy">
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Profesionales Expertos</h3>
+                    <p class="text-gray-600">Equipo de especialistas con amplia experiencia en todas las áreas de la odontología.</p>
+                </div>
+            </div>
+            <!-- Feature 3 -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1606811841689-23dfddce3e95?q=100&w=3840" 
+                     alt="Ambiente Confortable"
+                     class="w-full h-48 object-cover"
+                     loading="lazy">
+                <div class="p-6">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Ambiente Confortable</h3>
+                    <p class="text-gray-600">Instalaciones modernas diseñadas para tu comodidad y tranquilidad.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Initialize Swiper -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        new Swiper(".mySwiper", {
+            slidesPerView: 1,
+            spaceBetween: 30,
+            loop: true,
+            autoplay: {
+                delay: 3500,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+            },
+            navigation: {
+                nextEl: ".swiper-button-next",
+                prevEl: ".swiper-button-prev",
+            },
+            effect: "fade",
+            fadeEffect: {
+                crossFade: true
+            }
+        });
+    });
+</script>
+
+<style>
+    .swiper {
+        width: 100%;
+        height: 600px;
+    }
+    
+    .swiper-slide {
+        border-radius: 1rem;
+        overflow: hidden;
+    }
+    
+    .swiper-button-next,
+    .swiper-button-prev {
+        color: #4F46E5;
+    }
+    
+    .swiper-pagination-bullet-active {
+        background: #4F46E5;
+    }
+</style>
+
+<!-- Featured Services -->
+<div class="py-12 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+                Nuestros Servicios Principales
+            </h2>
+            <p class="mt-4 text-xl text-gray-500">
+                Ofrecemos una amplia gama de servicios dentales para toda la familia
+            </p>
+        </div>
+
+        <div class="mt-10">
+            <div class="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-3">
+                <!-- Limpieza Dental -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-900">Limpieza Dental</h3>
+                        <p class="mt-2 text-gray-500">Mantén tu sonrisa brillante con nuestras limpiezas profesionales.</p>
+                    </div>
+                </div>
+
+                <!-- Ortodoncia -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-900">Ortodoncia</h3>
+                        <p class="mt-2 text-gray-500">Alinea tus dientes con tratamientos personalizados.</p>
+                    </div>
+                </div>
+
+                <!-- Implantes -->
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <div class="p-6">
+                        <h3 class="text-xl font-semibold text-gray-900">Implantes Dentales</h3>
+                        <p class="mt-2 text-gray-500">Recupera tu sonrisa con implantes de última generación.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Why Choose Us -->
+<div class="py-12 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h2 class="text-3xl font-extrabold text-gray-900 sm:text-4xl">
+                ¿Por qué elegirnos?
+            </h2>
+        </div>
+        <div class="mt-10">
+            <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+                <div class="text-center">
+                    <div class="text-indigo-600 text-4xl mb-4">🏆</div>
+                    <h3 class="text-lg font-medium text-gray-900">Experiencia</h3>
+                    <p class="mt-2 text-gray-500">Más de 15 años de experiencia en el sector dental</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-indigo-600 text-4xl mb-4">🦷</div>
+                    <h3 class="text-lg font-medium text-gray-900">Tecnología</h3>
+                    <p class="mt-2 text-gray-500">Equipamiento de última generación</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-indigo-600 text-4xl mb-4">👨‍⚕️</div>
+                    <h3 class="text-lg font-medium text-gray-900">Profesionales</h3>
+                    <p class="mt-2 text-gray-500">Equipo altamente cualificado</p>
+                </div>
+                <div class="text-center">
+                    <div class="text-indigo-600 text-4xl mb-4">💰</div>
+                    <h3 class="text-lg font-medium text-gray-900">Precios</h3>
+                    <p class="mt-2 text-gray-500">Tarifas competitivas y facilidades de pago</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

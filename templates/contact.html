@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}Contacto{% endblock %}
+
+{% block head %}
+<!-- Add Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""/>
+<!-- Make sure you put this AFTER Leaflet's CSS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""></script>
+<style>
+    #map {
+        width: 100%;
+        height: 100%;
+        min-height: 400px;
+        border-radius: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bg-white">
+    <div class="max-w-7xl mx-auto py-16 px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl font-extrabold text-gray-900 sm:text-5xl">
+                Contacto
+            </h1>
+            <p class="mt-4 text-xl text-gray-500">
+                Estamos aquí para ayudarte
+            </p>
+        </div>
+
+        <div class="mt-20">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <!-- Contact Form -->
+                <div class="bg-white p-8 rounded-lg shadow-lg">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">Solicitar Cita</h2>
+                    <form action="/submit-contact" method="POST" class="space-y-6">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700">Nombre completo</label>
+                            <input type="text" name="name" id="name" required
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                            <input type="email" name="email" id="email" required
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-gray-700">Teléfono</label>
+                            <input type="tel" name="phone" id="phone" required
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label for="service" class="block text-sm font-medium text-gray-700">Servicio</label>
+                            <select name="service" id="service" required
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                <option value="">Selecciona un servicio</option>
+                                <option value="limpieza">Limpieza Dental</option>
+                                <option value="ortodoncia">Ortodoncia</option>
+                                <option value="implantes">Implantes Dentales</option>
+                                <option value="endodoncia">Endodoncia</option>
+                                <option value="estetica">Estética Dental</option>
+                                <option value="odontopediatria">Odontopediatría</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="message" class="block text-sm font-medium text-gray-700">Mensaje</label>
+                            <textarea name="message" id="message" rows="4" required
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                        </div>
+                        <div>
+                            <button type="submit"
+                                class="w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Enviar Solicitud
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Contact Information -->
+                <div class="space-y-8">
+                    <div class="bg-indigo-50 p-8 rounded-lg">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4">Información de Contacto</h3>
+                        <div class="space-y-4">
+                            <div class="flex items-center">
+                                <div class="text-2xl mr-4">📞</div>
+                                <div>
+                                    <p class="text-gray-900 font-medium">Teléfono</p>
+                                    <p class="text-gray-600">+34 900 123 456</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="text-2xl mr-4">📧</div>
+                                <div>
+                                    <p class="text-gray-900 font-medium">Email</p>
+                                    <p class="text-gray-600">info@dentalcare.com</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="text-2xl mr-4">📍</div>
+                                <div>
+                                    <p class="text-gray-900 font-medium">Dirección</p>
+                                    <p class="text-gray-600">Avenida Pedro Vicente Maldonado<br>Quitumbe, Quito, Ecuador</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-indigo-50 p-8 rounded-lg">
+                        <h3 class="text-xl font-semibold text-gray-900 mb-4">Horario de Atención</h3>
+                        <div class="space-y-2">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Lunes - Viernes</span>
+                                <span class="text-gray-900">9:00 - 20:00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Sábados</span>
+                                <span class="text-gray-900">9:00 - 14:00</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">Domingos</span>
+                                <span class="text-gray-900">Cerrado</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Map Container -->
+                    <div class="bg-white rounded-lg shadow-lg overflow-hidden h-96">
+                        <div id="map"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Initialize Map -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Coordenadas de la clínica dental en Quito
+        const lat = -0.304123;
+        const lng = -78.542628;
+        
+        // Crear el mapa
+        const map = L.map('map').setView([lat, lng], 15);
+        
+        // Añadir capa de OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Añadir marcador
+        const marker = L.marker([lat, lng]).addTo(map);
+
+        // Añadir popup con información
+        marker.bindPopup(`
+            <div class="p-2">
+                <h3 class="font-semibold">Clínica Dental</h3>
+                <p>Avenida Pedro Vicente Maldonado</p>
+                <p>Quitumbe, Quito, Ecuador</p>
+            </div>
+        `).openPopup();
+
+        // Forzar actualización del mapa después de que se muestre
+        setTimeout(() => {
+            map.invalidateSize();
+        }, 100);
+    });
+</script>
+{% endblock %} 

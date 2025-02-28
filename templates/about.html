@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Nosotros{% endblock %}
+
+{% block content %}
+<div class="bg-white py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Hero Section -->
+        <div class="text-center">
+            <h1 class="text-4xl font-extrabold text-gray-900 sm:text-5xl">
+                Sobre Nosotros
+            </h1>
+            <p class="mt-4 text-xl text-gray-500">
+                Más de 15 años cuidando sonrisas en Quito
+            </p>
+        </div>
+
+        <!-- Main Content -->
+        <div class="mt-20">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div>
+                    <img src="https://images.unsplash.com/photo-1629909615184-74f495363b67?q=100&w=2000" 
+                         alt="Equipo Dental"
+                         class="rounded-lg shadow-lg w-full h-[400px] object-cover"
+                         loading="lazy">
+                </div>
+                <div class="space-y-6">
+                    <h2 class="text-3xl font-bold text-gray-900">Nuestra Historia</h2>
+                    <p class="text-lg text-gray-600">
+                        Desde 2009, nos hemos dedicado a proporcionar servicios dentales de la más alta calidad a nuestra comunidad en Quito. Nuestro compromiso con la excelencia y el cuidado personalizado nos ha permitido crecer y convertirnos en una de las clínicas dentales más respetadas de la ciudad.
+                    </p>
+                    <p class="text-lg text-gray-600">
+                        Utilizamos la tecnología más avanzada y técnicas modernas para garantizar los mejores resultados para nuestros pacientes.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Values Section -->
+        <div class="mt-20">
+            <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Nuestros Valores</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-indigo-50 p-8 rounded-lg text-center">
+                    <div class="text-4xl mb-4">🎯</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Excelencia</h3>
+                    <p class="text-gray-600">Buscamos la perfección en cada tratamiento que realizamos.</p>
+                </div>
+                <div class="bg-indigo-50 p-8 rounded-lg text-center">
+                    <div class="text-4xl mb-4">💝</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Compromiso</h3>
+                    <p class="text-gray-600">Tu salud dental es nuestra principal prioridad.</p>
+                </div>
+                <div class="bg-indigo-50 p-8 rounded-lg text-center">
+                    <div class="text-4xl mb-4">🤝</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Confianza</h3>
+                    <p class="text-gray-600">Construimos relaciones duraderas con nuestros pacientes.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Team Section -->
+        <div class="mt-20">
+            <h2 class="text-3xl font-bold text-center text-gray-900 mb-12">Nuestro Equipo</h2>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1622253692010-333f2da6031d?q=100&w=2000" 
+                         alt="Doctor 1"
+                         class="w-full h-64 object-cover"
+                         loading="lazy">
+                    <div class="p-6 text-center">
+                        <h3 class="text-xl font-bold text-gray-900">Dr. Juan Pérez</h3>
+                        <p class="text-indigo-600">Ortodoncista</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1594824476967-48c8b964273f?q=100&w=2000" 
+                         alt="Doctor 2"
+                         class="w-full h-64 object-cover"
+                         loading="lazy">
+                    <div class="p-6 text-center">
+                        <h3 class="text-xl font-bold text-gray-900">Dra. María González</h3>
+                        <p class="text-indigo-600">Endodoncista</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                    <img src="https://images.unsplash.com/photo-1537368910025-700350fe46c7?q=100&w=2000" 
+                         alt="Doctor 3"
+                         class="w-full h-64 object-cover"
+                         loading="lazy">
+                    <div class="p-6 text-center">
+                        <h3 class="text-xl font-bold text-gray-900">Dr. Carlos Rodríguez</h3>
+                        <p class="text-indigo-600">Implantólogo</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="mt-20">
+            <div class="bg-indigo-50 rounded-lg px-6 py-12 text-center">
+                <h2 class="text-3xl font-bold text-indigo-600">
+                    ¿Quieres conocernos mejor?
+                </h2>
+                <p class="mt-4 text-lg text-gray-600">
+                    Agenda una consulta y descubre por qué somos la mejor opción para tu salud dental
+                </p>
+                <div class="mt-8">
+                    <a href="/contact" 
+                       class="inline-block bg-indigo-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-indigo-700 transition duration-300">
+                        Agendar Cita
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

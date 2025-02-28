@@ -1,0 +1,436 @@
+{% extends "base.html" %}
+
+{% block title %}Administración - Citas{% endblock %}
+
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+<style>
+    .status-pendiente { background-color: #FEF3C7; }
+    .status-confirmada { background-color: #D1FAE5; }
+    .status-cancelada { background-color: #FEE2E2; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-800">Panel de Administración</h1>
+        <div class="flex gap-4">
+            <button onclick="exportToCSV()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                </svg>
+                Exportar CSV
+            </button>
+            <button onclick="exportToPDF()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+                Exportar PDF
+            </button>
+            <a href="/logout" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
+                Cerrar Sesión
+            </a>
+        </div>
+    </div>
+
+    <!-- Dashboard Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <!-- Citas Hoy -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-lg font-semibold text-gray-700 mb-2">Citas Hoy</h2>
+            {% set today_count = 0 %}
+            {% for cita in citas %}
+                {% if cita.created_at.date() == today %}
+                    {% set today_count = today_count + 1 %}
+                {% endif %}
+            {% endfor %}
+            <p class="text-3xl font-bold text-indigo-600">{{ today_count }}</p>
+        </div>
+        
+        <!-- Servicio más solicitado -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-lg font-semibold text-gray-700 mb-2">Servicio más solicitado</h2>
+            <p class="text-3xl font-bold text-indigo-600" id="servicioMasSolicitado">Sin datos</p>
+        </div>
+        
+        <!-- Total de citas -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-lg font-semibold text-gray-700 mb-2">Total de citas</h2>
+            <p class="text-3xl font-bold text-indigo-600">{{ citas|length }}</p>
+        </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <div class="flex flex-wrap gap-4 items-center">
+            <div>
+                <label for="serviceFilter" class="block text-sm font-medium text-gray-700 mb-1">Filtrar por Servicio</label>
+                <select id="serviceFilter" class="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <option value="">Todos los servicios</option>
+                    <option value="limpieza">Limpieza Dental</option>
+                    <option value="ortodoncia">Ortodoncia</option>
+                    <option value="implantes">Implantes Dentales</option>
+                    <option value="endodoncia">Endodoncia</option>
+                    <option value="estetica">Estética Dental</option>
+                    <option value="odontopediatria">Odontopediatría</option>
+                </select>
+            </div>
+            <div>
+                <label for="searchInput" class="block text-sm font-medium text-gray-700 mb-1">Buscar</label>
+                <input type="text" id="searchInput" placeholder="Buscar..." class="border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráfico de servicios -->
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-lg font-semibold text-gray-700 mb-4">Estadísticas de Servicios</h2>
+        <div style="height: 400px;">
+            <canvas id="serviciosChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Tabla de citas -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teléfono</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Servicio</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                {% for cita in citas %}
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <input type="datetime-local" 
+                               value="{{ cita.created_at.strftime('%Y-%m-%dT%H:%M') }}"
+                               data-id="{{ cita.id }}"
+                               onchange="updateDate(event, this.dataset.id, this.value)"
+                               class="border rounded px-2 py-1">
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <input type="text" 
+                               value="{{ cita.name }}"
+                               data-id="{{ cita.id }}"
+                               onchange="updateName(event, this.dataset.id, this.value)"
+                               class="border rounded px-2 py-1">
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ cita.email }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ cita.phone }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ cita.service }}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <select data-id="{{ cita.id }}"
+                                onchange="updateStatus(event, this.dataset.id, this.value)"
+                                class="status-{{ cita.status }} border rounded px-2 py-1">
+                            <option value="pendiente" {% if cita.status == 'pendiente' %}selected{% endif %}>Pendiente</option>
+                            <option value="confirmada" {% if cita.status == 'confirmada' %}selected{% endif %}>Confirmada</option>
+                            <option value="cancelada" {% if cita.status == 'cancelada' %}selected{% endif %}>Cancelada</option>
+                        </select>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <a href="/admin/delete/{{ cita.id }}" 
+                           onclick="return confirm('¿Estás seguro de que deseas eliminar esta cita?')"
+                           class="text-red-600 hover:text-red-900">
+                            Eliminar
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+// Función para actualizar el estado
+async function updateStatus(event, id, status) {
+    try {
+        const response = await fetch(`/admin/update-status/${id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ status: status })
+        });
+        
+        if (!response.ok) {
+            throw new Error('Error en la respuesta del servidor');
+        }
+        
+        const data = await response.json();
+        if (data.status === 'success') {
+            const select = event.target;
+            select.className = `status-${status} border rounded px-2 py-1`;
+            // Mostrar mensaje de éxito
+            const toast = document.createElement('div');
+            toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-6 py-3 rounded shadow-lg';
+            toast.textContent = 'Estado actualizado correctamente';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 3000);
+        } else {
+            throw new Error('Error en la respuesta del servidor');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al actualizar el estado');
+    }
+}
+
+// Función para actualizar la fecha
+async function updateDate(event, id, date) {
+    try {
+        const response = await fetch(`/admin/edit-cita/${id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                name: event.target.closest('tr').querySelector('input[type="text"]').value,
+                created_at: date 
+            })
+        });
+        
+        const data = await response.json();
+        if (data.status !== 'success') {
+            throw new Error('Error en la respuesta del servidor');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al actualizar la fecha');
+    }
+}
+
+// Función para actualizar el nombre
+async function updateName(event, id, name) {
+    try {
+        const response = await fetch(`/admin/edit-cita/${id}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ 
+                name: name,
+                created_at: event.target.closest('tr').querySelector('input[type="datetime-local"]').value
+            })
+        });
+        
+        const data = await response.json();
+        if (data.status !== 'success') {
+            throw new Error('Error en la respuesta del servidor');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error al actualizar el nombre');
+    }
+}
+
+// Función para exportar a CSV
+function exportToCSV() {
+    const rows = [];
+    document.querySelectorAll('table tbody tr').forEach(row => {
+        const rowData = [];
+        [0, 1, 2, 3, 4, 5].forEach(i => {
+            let cell = row.cells[i];
+            if (i === 0) {
+                const input = cell.querySelector('input');
+                rowData.push(input ? input.value : cell.textContent.trim());
+            } else if (i === 1) {
+                const input = cell.querySelector('input');
+                rowData.push(input ? input.value : cell.textContent.trim());
+            } else if (i === 5) {
+                const select = cell.querySelector('select');
+                rowData.push(select ? select.value : cell.textContent.trim());
+            } else {
+                rowData.push(cell.textContent.trim());
+            }
+        });
+        rows.push(rowData.join(','));
+    });
+    
+    const csvContent = "data:text/csv;charset=utf-8," + 
+        "Fecha,Nombre,Email,Teléfono,Servicio,Estado\n" + 
+        rows.join('\n');
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", "citas.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+// Función para exportar a PDF
+function exportToPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    doc.setFontSize(18);
+    doc.text('Reporte de Citas', 14, 20);
+    doc.setFontSize(11);
+    doc.text(`Fecha del reporte: ${new Date().toLocaleDateString()}`, 14, 30);
+    const headers = [['Fecha', 'Nombre', 'Email', 'Teléfono', 'Servicio', 'Estado']];
+    const data = [];
+    document.querySelectorAll('table tbody tr').forEach(row => {
+        const rowData = [];
+        [0, 1, 2, 3, 4, 5].forEach(i => {
+            let cell = row.cells[i];
+            if (i === 0) {
+                const input = cell.querySelector('input');
+                rowData.push(input ? input.value : cell.textContent.trim());
+            } else if (i === 1) {
+                const input = cell.querySelector('input');
+                rowData.push(input ? input.value : cell.textContent.trim());
+            } else if (i === 5) {
+                const select = cell.querySelector('select');
+                rowData.push(select ? select.value : cell.textContent.trim());
+            } else {
+                rowData.push(cell.textContent.trim());
+            }
+        });
+        data.push(rowData);
+    });
+    doc.autoTable({
+        head: headers,
+        body: data,
+        startY: 40,
+        styles: { fontSize: 8, cellPadding: 2 },
+        headStyles: { fillColor: [66, 139, 202] },
+        alternateRowStyles: { fillColor: [245, 245, 245] },
+        margin: { top: 40 }
+    });
+    doc.save('reporte-citas.pdf');
+}
+
+// Función para filtrar la tabla
+function filterTable() {
+    const serviceFilter = document.getElementById('serviceFilter').value.toLowerCase();
+    const searchText = document.getElementById('searchInput').value.toLowerCase();
+    const rows = document.querySelectorAll('table tbody tr');
+
+    rows.forEach(row => {
+        const service = row.querySelector('td:nth-child(5)').textContent.toLowerCase();
+        const name = row.querySelector('td:nth-child(2) input').value.toLowerCase();
+        const email = row.querySelector('td:nth-child(3)').textContent.toLowerCase();
+        const phone = row.querySelector('td:nth-child(4)').textContent.toLowerCase();
+
+        const matchesService = !serviceFilter || service === serviceFilter;
+        const matchesSearch = !searchText || 
+            name.includes(searchText) || 
+            email.includes(searchText) || 
+            phone.includes(searchText) ||
+            service.includes(searchText);
+
+        row.style.display = matchesService && matchesSearch ? '' : 'none';
+    });
+}
+
+// Inicializar el gráfico de servicios
+document.addEventListener('DOMContentLoaded', function() {
+    const serviceStatsData = JSON.parse('{{ service_stats|tojson|safe }}');
+    
+    if (Object.keys(serviceStatsData).length === 0) {
+        document.getElementById('serviciosChart').style.display = 'none';
+        document.getElementById('serviciosChart').insertAdjacentHTML('afterend', 
+            '<p class="text-gray-500 text-center py-4">No hay datos disponibles para mostrar</p>');
+        return;
+    }
+
+    try {
+        const ctx = document.getElementById('serviciosChart').getContext('2d');
+        
+        // Generar colores dinámicos
+        const generateColors = (num) => {
+            const colors = [];
+            for (let i = 0; i < num; i++) {
+                const hue = (i * 360) / num;
+                colors.push(`hsla(${hue}, 70%, 60%, 0.8)`);
+            }
+            return colors;
+        };
+
+        const labels = Object.keys(serviceStatsData);
+        const data = Object.values(serviceStatsData);
+        const colors = generateColors(labels.length);
+
+        const serviciosChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: colors,
+                    borderColor: colors.map(color => color.replace('0.8', '1')),
+                    borderWidth: 2,
+                    hoverOffset: 15
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            font: {
+                                size: 14
+                            },
+                            padding: 20,
+                            usePointStyle: true,
+                            pointStyle: 'circle'
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const label = context.label || '';
+                                const value = context.raw || 0;
+                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                const percentage = Math.round((value * 100) / total);
+                                return `${label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    }
+                },
+                animation: {
+                    animateScale: true,
+                    animateRotate: true,
+                    duration: 2000,
+                    easing: 'easeInOutQuart'
+                },
+                cutout: '60%'
+            }
+        });
+
+        // Actualizar el servicio más solicitado
+        const servicios = Object.entries(serviceStatsData);
+        if (servicios.length > 0) {
+            const [servicioMasSolicitado] = servicios.reduce((max, current) => 
+                current[1] > max[1] ? current : max
+            );
+            document.getElementById('servicioMasSolicitado').textContent = servicioMasSolicitado;
+        }
+    } catch (error) {
+        console.error('Error al inicializar el gráfico:', error);
+        document.getElementById('serviciosChart').style.display = 'none';
+        document.getElementById('serviciosChart').insertAdjacentHTML('afterend', 
+            '<p class="text-red-500 text-center py-4">Error al cargar el gráfico</p>');
+    }
+
+    // Agregar event listeners para los filtros
+    const serviceFilter = document.getElementById('serviceFilter');
+    const searchInput = document.getElementById('searchInput');
+
+    serviceFilter.addEventListener('change', filterTable);
+    searchInput.addEventListener('input', filterTable);
+});
+</script>
+{% endblock %}
