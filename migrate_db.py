@@ -2,18 +2,16 @@ import os
 import pyodbc
 import psycopg2
 from datetime import datetime
+from dotenv import load_dotenv
+
+# Cargar variables de entorno desde .env.migration
+load_dotenv('.env.migration')
 
 # Configuración de SQL Server (origen)
-sql_server_conn = pyodbc.connect(
-    'Driver={ODBC Driver 17 for SQL Server};'
-    'Server=localhost;'
-    'Database=CLINICA;'
-    'Trusted_Connection=yes;'
-)
+sql_server_conn = pyodbc.connect(os.getenv('SQL_SERVER_CONNECTION'))
 
 # Configuración de PostgreSQL (destino)
-# Asegúrate de reemplazar esta URL con la que te proporciona Neon
-pg_conn = psycopg2.connect(os.getenv("DATABASE_URL", "postgresql://user:password@localhost/clinica"))
+pg_conn = psycopg2.connect(os.getenv('NEON_DB_URL'))
 
 try:
     # Crear cursor para SQL Server
