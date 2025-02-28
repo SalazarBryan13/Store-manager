@@ -21,8 +21,8 @@ Este es un sistema de gestión de citas para una clínica dental, desarrollado c
 
 1. Clonar el repositorio:
 ```bash
-git clone [URL_DEL_REPOSITORIO]
-cd [NOMBRE_DEL_PROYECTO]
+git clone https://github.com/SalazarBryan13/Store-manager.git
+cd Store-manager
 ```
 
 2. Instalar dependencias:
@@ -49,4 +49,4 @@ La aplicación está configurada para ser desplegada en Vercel. Ver `vercel.json
 
 ## Licencia
 
-MIT 
+MIT
